@@ -1,0 +1,1 @@
+["^ ","~$validate",["^ ","~:row",4,"~:col",1,"~:fixed-arities",["~#set",[1]],"~:name","^0","~:ns","~$klor-experiments.validation","~:top-ns","^7","~:arities",["^ ","~i1",["^ ","~:ret",["^4",["~:string","~:nil"]],"~:arglist-str","[{:keys [name email]}]"]],"~:type","~:fn"],"~:filename","/Users/adriansmith/Code/klor-experiments/src/klor_experiments/validation.clj"]

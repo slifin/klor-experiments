@@ -1,0 +1,9 @@
+{;; klor.core uses :refer :all to expose defchor and the stdlib — expected
+ :linters {:refer-all {:exclude [klor.core]}}
+
+ ;; defchor introduces role names (Client, Server) and communication
+ ;; operators (Client->Server, Server->Client, Server=>Client) as implicit
+ ;; bindings inside the choreography body. clj-kondo cannot see these
+ ;; statically, so we disable unresolved-symbol for the choreography ns.
+ :config-in-ns {klor-experiments.choreography
+                {:linters {:unresolved-symbol {:level :off}}}}}

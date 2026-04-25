@@ -16,15 +16,21 @@
       button, .btn { background: #333; color: #e0e0e0; border: 1px solid #555; padding: 0.4rem 0.8rem; cursor: pointer; text-decoration: none; }
       button:hover, .btn:hover { background: #444; }
       .btn-danger { border-color: #844; color: #f88; }
+      .error { color: #f88; border: 1px solid #844; padding: 0.5rem 0.8rem; margin-bottom: 1rem; }
       form { display: inline; }
       .create-form { margin-bottom: 2rem; padding: 1rem; border: 1px solid #333; }"]]
    [:body body]])
 
-(defn users-page [users]
+(defn error-box [error]
+  (when error
+    [:div.error error]))
+
+(defn users-page [users & [error]]
   (layout
    [:h1 "Users"]
    [:div.create-form
     [:h2 "Create User"]
+    (error-box error)
     [:form {:method "post" :action "/users"}
      [:input {:type "text" :name "name" :placeholder "Name" :required true}]
      [:input {:type "email" :name "email" :placeholder "Email" :required true}]
@@ -43,9 +49,10 @@
          [:form {:method "post" :action (str "/users/" (:id user) "/delete")}
           [:button.btn.btn-danger {:type "submit"} "Delete"]]]])]]))
 
-(defn edit-page [user]
+(defn edit-page [user & [error]]
   (layout
    [:h1 "Edit User"]
+   (error-box error)
    [:form {:method "post" :action (str "/users/" (:id user))}
     [:div [:input {:type "text" :name "name" :value (:name user) :required true}]]
     [:br]
