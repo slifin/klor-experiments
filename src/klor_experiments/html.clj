@@ -28,6 +28,7 @@
 (defn users-page [users & [error]]
   (layout
    [:h1 "Users"]
+   [:p [:a.btn {:href "/register"} "Register (wizard)"]]
    [:div.create-form
     [:h2 "Create User"]
     (error-box error)
@@ -61,3 +62,38 @@
     [:button {:type "submit"} "Save"]
     " "
     [:a.btn {:href "/"} "Cancel"]]))
+
+(defn register-name-step [session-id error]
+  (layout
+   [:h1 "Register — Step 1 of 2"]
+   [:p "Enter your name"]
+   (error-box error)
+   [:form {:method "post" :action "/register"}
+    [:input {:type "hidden" :name "session-id" :value session-id}]
+    [:div [:input {:type "text" :name "value" :placeholder "Name" :autofocus true}]]
+    [:br]
+    [:button {:type "submit"} "Next →"]]))
+
+(defn register-email-step [session-id error]
+  (layout
+   [:h1 "Register — Step 2 of 2"]
+   [:p "Enter your email"]
+   (error-box error)
+   [:form {:method "post" :action "/register"}
+    [:input {:type "hidden" :name "session-id" :value session-id}]
+    [:div [:input {:type "email" :name "value" :placeholder "Email" :autofocus true}]]
+    [:br]
+    [:button {:type "submit"} "Register"]]))
+
+(defn register-success [user]
+  (layout
+   [:h1 "Registration Complete"]
+   [:p "Welcome, " [:strong (:name user)] "!"]
+   [:p "Your account has been created with email " [:strong (:email user)] "."]
+   [:p [:a.btn {:href "/"} "← Back to Users"]]))
+
+(defn register-error [errors]
+  (layout
+   [:h1 "Registration Failed"]
+   [:div.error errors]
+   [:p [:a.btn {:href "/register"} "Try Again"]]))

@@ -5,8 +5,10 @@
             [ring.middleware.flash :refer [wrap-flash]]
             [ring.middleware.session :refer [wrap-session]]
             [hiccup2.core :as h]
+            [clojure.core.async :as a]
             [klor.simulator :refer [simulate-chor]]
             [klor-experiments.choreography :refer [list-users create-user update-user delete-user]]
+            [klor-experiments.multi-step :as multi-step]
             [klor-experiments.storage :as storage]
             [klor-experiments.html :as html]))
 
@@ -60,7 +62,26 @@
      ["/users/:id/delete" {:post (fn [req]
                                    (let [id (Long/parseLong (get-in req [:path-params :id]))]
                                      (run-chor delete-user id)
-                                     (redirect "/")))}]])
+                                     (redirect "/")))}]
+
+     ["/register"
+      {:get  (fn [_]
+               (let [sid    (str (java.util.UUID/randomUUID))
+                     in-ch  (a/chan 1)
+                     out-ch (a/chan 1)]
+                 (swap! multi-step/reg-sessions assoc sid {:in-ch in-ch :out-ch out-ch})
+                 (future
+                   @(simulate-chor multi-step/register-wizard sid)
+                   (swap! multi-step/reg-sessions dissoc sid))
+                 (html-response (a/<!! out-ch))))
+       :post (fn [req]
+               (let [sid   (get-in req [:params "session-id"])
+                     value (get-in req [:params "value"])]
+                 (if-let [session (get @multi-step/reg-sessions sid)]
+                   (do
+                     (a/>!! (:in-ch session) value)
+                     (html-response (a/<!! (:out-ch session))))
+                   (redirect "/register"))))}]])
 
    (ring/routes
     (ring/create-resource-handler {:path "/"})

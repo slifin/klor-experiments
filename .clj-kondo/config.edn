@@ -6,4 +6,6 @@
  ;; bindings inside the choreography body. clj-kondo cannot see these
  ;; statically, so we disable unresolved-symbol for the choreography ns.
  :config-in-ns {klor-experiments.choreography
+                {:linters {:unresolved-symbol {:level :off}}}
+                klor-experiments.multi-step
                 {:linters {:unresolved-symbol {:level :off}}}}}
